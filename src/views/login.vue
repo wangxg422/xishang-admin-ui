@@ -23,9 +23,9 @@
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
-      <el-form-item prop="code" v-if="captchaEnabled">
+      <el-form-item prop="captchaCode" v-if="captchaEnabled">
         <el-input
-          v-model="loginForm.code"
+          v-model="loginForm.captchaCode"
           auto-complete="off"
           placeholder="验证码"
           style="width: 63%"
@@ -75,8 +75,8 @@ export default {
         username: "admin",
         password: "admin123",
         rememberMe: false,
-        code: "",
-        uuid: ""
+        captchaCode: "",
+        captchaId: ""
       },
       loginRules: {
         username: [
@@ -85,7 +85,7 @@ export default {
         password: [
           { required: true, trigger: "blur", message: "请输入您的密码" }
         ],
-        code: [{ required: true, trigger: "change", message: "请输入验证码" }]
+        captchaCode: [{ required: true, trigger: "change", message: "请输入验证码" }]
       },
       loading: false,
       // 验证码开关
@@ -113,7 +113,7 @@ export default {
         this.captchaEnabled = res.data.captchaEnabled === undefined ? true : res.data.captchaEnabled;
         if (this.captchaEnabled) {
           this.codeUrl = res.data.picPath;
-          this.loginForm.uuid = res.captchaId;
+          this.loginForm.captchaId = res.data.captchaId;
         }
       });
     },
