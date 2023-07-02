@@ -469,9 +469,10 @@ export default {
     /** 查询用户列表 */
     getList() {
       this.loading = true;
-      listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.userList = response.rows;
-          this.total = response.total;
+      listUser(this.addDateRange(this.queryParams, this.dateRange)).then(res => {
+          const data = res.data || {} 
+          this.userList = data.list || [];
+          this.total = data.total;
           this.loading = false;
         }
       );
