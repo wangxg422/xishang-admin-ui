@@ -341,7 +341,7 @@
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect } from "@/api/system/user";
+import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect, getRoleAndPost} from "@/api/system/user";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -461,15 +461,23 @@ export default {
   created() {
     this.getList();
     this.getDeptTree();
-    this.getConfigKey("sys.user.initPassword").then(response => {
-      this.initPassword = response.msg;
+    this.getConfigKey("sys.user.initPassword").then(res => {
+      this.initPassword = res.data;
     });
   },
   methods: {
     /** 查询用户列表 */
     getList() {
       this.loading = true;
-      listUser(this.addDateRange(this.queryParams, this.dateRange)).then(res => {
+      let params = this.queryParams
+      if (this.dateRange && this.dateRange.length == 2) {
+        params = {...this.queryParams,
+        beginTime: this.dateRange[0],
+        endTime: this.dateRange[1]
+       }
+      }
+      
+      listUser(params).then(res => {
           const data = res.data || {} 
           this.userList = data.list || [];
           this.total = data.total;
@@ -562,9 +570,10 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      getUser().then(response => {
-        this.postOptions = response.posts;
-        this.roleOptions = response.roles;
+      getRoleAndPost().then(res => {
+        const data = res.data || {}
+        this.postOptions = data.posts;
+        this.roleOptions = data.roles;
         this.open = true;
         this.title = "添加用户";
         this.form.password = this.initPassword;

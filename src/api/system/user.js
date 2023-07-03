@@ -18,6 +18,13 @@ export function getUser(userId) {
   })
 }
 
+export function getRoleAndPost() {
+  return request({
+    url: '/sys/user/roleAndPost',
+    method: 'get'
+  })
+}
+
 // 新增用户
 export function addUser(data) {
   return request({
