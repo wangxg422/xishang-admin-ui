@@ -13,14 +13,7 @@ export function listUser(query) {
 // 查询用户详细
 export function getUser(userId) {
   return request({
-    url: '/system/user/' + parseStrEmpty(userId),
-    method: 'get'
-  })
-}
-
-export function getRoleAndPost() {
-  return request({
-    url: '/sys/user/roleAndPost',
+    url: '/sys/user?userId=' + parseStrEmpty(userId),
     method: 'get'
   })
 }
@@ -58,7 +51,7 @@ export function resetUserPwd(userId, password) {
     password
   }
   return request({
-    url: '/system/user/resetPwd',
+    url: '/sys/user/resetPwd',
     method: 'put',
     data: data
   })

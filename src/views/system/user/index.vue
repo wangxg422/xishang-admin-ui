@@ -39,9 +39,9 @@
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item label="手机号码" prop="phonenumber">
+          <el-form-item label="手机号码" prop="phoneNumber">
             <el-input
-              v-model="queryParams.phonenumber"
+              v-model="queryParams.phoneNumber"
               placeholder="请输入手机号码"
               clearable
               style="width: 240px"
@@ -142,13 +142,13 @@
           <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" />
           <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
           <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
-          <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns[4].visible" width="120" />
+          <el-table-column label="手机号码" align="center" key="phoneNumber" prop="phoneNumber" v-if="columns[4].visible" width="120" />
           <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
             <template slot-scope="scope">
               <el-switch
                 v-model="scope.row.status"
-                active-value="0"
-                inactive-value="1"
+                active-value=0
+                inactive-value=1
                 @change="handleStatusChange(scope.row)"
               ></el-switch>
             </template>
@@ -219,8 +219,8 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="手机号码" prop="phonenumber">
-              <el-input v-model="form.phonenumber" placeholder="请输入手机号码" maxlength="11" />
+            <el-form-item label="手机号码" prop="phoneNumber">
+              <el-input v-model="form.phoneNumber" placeholder="请输入手机号码" maxlength="11" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -341,7 +341,7 @@
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect, getRoleAndPost} from "@/api/system/user";
+import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect} from "@/api/system/user";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -377,6 +377,7 @@ export default {
       // 默认密码
       initPassword: undefined,
       // 日期范围
+      // 日期范围
       dateRange: [],
       // 岗位选项
       postOptions: [],
@@ -408,7 +409,7 @@ export default {
         pageNum: 1,
         pageSize: 10,
         userName: undefined,
-        phonenumber: undefined,
+        phoneNumber: undefined,
         status: undefined,
         deptId: undefined
       },
@@ -442,7 +443,7 @@ export default {
             trigger: ["blur", "change"]
           }
         ],
-        phonenumber: [
+        phoneNumber: [
           {
             pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
             message: "请输入正确的手机号码",
@@ -476,9 +477,9 @@ export default {
         endTime: this.dateRange[1]
        }
       }
-      
+
       listUser(params).then(res => {
-          const data = res.data || {} 
+          const data = res.data || {}
           this.userList = data.list || [];
           this.total = data.total;
           this.loading = false;
@@ -525,7 +526,7 @@ export default {
         userName: undefined,
         nickName: undefined,
         password: undefined,
-        phonenumber: undefined,
+        phoneNumber: undefined,
         email: undefined,
         sex: undefined,
         status: "0",
@@ -570,7 +571,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-      getRoleAndPost().then(res => {
+      getUser().then(res => {
         const data = res.data || {}
         this.postOptions = data.posts;
         this.roleOptions = data.roles;
@@ -583,12 +584,14 @@ export default {
     handleUpdate(row) {
       this.reset();
       const userId = row.userId || this.ids;
-      getUser(userId).then(response => {
-        this.form = response.data;
-        this.postOptions = response.posts;
-        this.roleOptions = response.roles;
-        this.$set(this.form, "postIds", response.postIds);
-        this.$set(this.form, "roleIds", response.roleIds);
+      getUser(userId).then(res => {
+        const data = res.data || {}
+
+        this.form = data.userInfo || {};
+        this.postOptions = data.posts || [];
+        this.roleOptions = data.roles || [];
+        this.$set(this.form, "postIds", data.postIds);
+        this.$set(this.form, "roleIds", data.roleIds);
         this.open = true;
         this.title = "修改用户";
         this.form.password = "";
@@ -617,14 +620,18 @@ export default {
     submitForm: function() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.userId != undefined) {
-            updateUser(this.form).then(response => {
+          const params = {
+            ...this.form,
+            status: parseInt(this.form.status)
+          }
+          if (this.form.userId) {
+            updateUser(params).then(res => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addUser(this.form).then(response => {
+            addUser(params).then(res => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
