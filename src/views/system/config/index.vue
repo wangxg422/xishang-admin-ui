@@ -239,9 +239,11 @@ export default {
     /** 查询参数列表 */
     getList() {
       this.loading = true;
-      listConfig(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.configList = response.rows;
-          this.total = response.total;
+      listConfig(this.addDateRange(this.queryParams, this.dateRange)).then(res => {
+          const data = res.data || {}
+
+          this.configList = data.rows;
+          this.total = data.total;
           this.loading = false;
         }
       );
