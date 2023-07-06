@@ -260,7 +260,7 @@ export default {
         configName: undefined,
         configKey: undefined,
         configValue: undefined,
-        configType: "Y",
+        configType: "0",
         remark: undefined
       };
       this.resetForm("form");
